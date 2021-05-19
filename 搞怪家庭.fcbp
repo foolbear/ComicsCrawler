@@ -1,0 +1,45 @@
+{
+    "sourceUrl": "https://m.mhgui.com/comic/1062/", 
+    "name": "搞怪家庭", 
+    "author": "北条司", 
+    "introduction": "        雅彦搬进舅舅的家后竟发现舅舅是女人，而舅母才是母亲的弟弟，在这个特殊家庭的内，雅彦逐渐对漂亮的表妹产生了感情，但是面对性别颠倒的舅母和舅舅，表妹的性别成了雅彦的一大疑问，在探求表妹身份的同时，\"雅彦\"也逐渐开始男扮女装成了大学影视剧俱乐部的大明星，并且得到了黑社会老大的爱慕！？突然又出现了个女扮男装的帅哥出来追求他，总之发生在这家人身上的故事就是那么不可思议！", 
+    "coverUrl": "https://cf.hamreus.com/cpic/m/1062.jpg", 
+    "chapters": [
+        {
+            "index": 0, 
+            "sourceUrl": "https://m.mhgui.com//comic/1062/9334.html", 
+            "name": "第01卷(P1)", 
+            "pictures": [
+                {
+                    "index": 0, 
+                    "slices": [
+                        {
+                            "index": 0, 
+                            "sourceUrl": "https://i.hamreus.com/ps1/g/GGJT/01/seemh-001-c97c.jpg.webp?e=1622628243&m=N6DO5FLjRvnTt36Ges0umg"
+                        }
+                    ]
+                }, 
+                {
+                    "index": 1, 
+                    "slices": [
+                        {
+                            "index": 0, 
+                            "sourceUrl": "https://i.hamreus.com/ps1/g/GGJT/01/seemh-002-c7fd.png.webp?e=1622628243&m=N6DO5FLjRvnTt36Ges0umg"
+                        }
+                    ]
+                }, 
+                {
+                    "index": 2, 
+                    "slices": [
+                        {
+                            "index": 0, 
+                            "sourceUrl": "https://i.hamreus.com/ps1/g/GGJT/01/seemh-003-96a7b.png.webp?e=1622628243&m=N6DO5FLjRvnTt36Ges0umg"
+                        }
+                    ]
+                }
+            ]
+        }
+    ], 
+    "sourceName": "看漫画", 
+    "sourceUpdateAt": "2016-06-01"
+}
