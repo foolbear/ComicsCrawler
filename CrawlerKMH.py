@@ -16,19 +16,22 @@ reload(sys)
 sys.setdefaultencoding('utf8')
 
 def getPicture(url):
-    driver = webdriver.Chrome()
-    driver.set_window_size(100, 100)
+    option = webdriver.ChromeOptions()
+    option.add_argument('headless')
+    driver = webdriver.Chrome(chrome_options = option)
     driver.get(url)
+    
     soup = BeautifulSoup(driver.page_source, 'html.parser')
     img = soup.find_all('img')[1]['src']
     manga_page = soup.find_all('span', class_ = 'manga-page')[0]
     pindex = manga_page.b.text.strip()
     ptotal = manga_page.text[len(pindex)+1:][:-1]
     driver.close()
-    print(pindex + '/' + ptotal + ', ' + img)
+    print('\t%s/%s, %s' %(pindex, ptotal, img[:80]))
     return int(pindex), int(ptotal), quote(img.encode('utf8'), safe = string.printable)
 
 def getChapter(url, title, index):
+    print('Chapter %s' %(title))
     pindex, ptotal, img = getPicture(url)
     imgs = [img]
     for i in range(ptotal-1):
@@ -55,7 +58,7 @@ def getChapter(url, title, index):
             chapter.pictures.append(picture)
             pindex += 1
         
-        print('\tchapter %04d: %s, include %d pictures' %(chapter.index, chapter.name, len(chapter.pictures)))
+        print('\tchapter %04d: %s, include %d picture(s)' %(chapter.index, chapter.name, len(chapter.pictures)))
         chapters.append(chapter)
     return chapters
 
