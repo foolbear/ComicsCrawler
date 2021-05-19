@@ -13,7 +13,7 @@ from CrawlerWeb import Param, parseCommandLine, request, write2FCBP
 reload(sys)
 sys.setdefaultencoding('utf8')
 
-def getChapter(bookName, driver, url, index):
+def getChapter(bookName, url, index):
     req = request(url = url)
     req.encoding = req.apparent_encoding
     soup = BeautifulSoup(req.text, 'html.parser')
@@ -65,9 +65,9 @@ def getChapter(bookName, driver, url, index):
     return chapter
 
 def getBook(param):
-    driver = webdriver.Chrome()
-    driver.set_window_size(100, 100)
-    
+    options = webdriver.ChromeOptions()
+    options.add_argument('headless')
+    driver = webdriver.Chrome(chrome_options = options)
     driver.get(param.bookUrl)
     alert = driver.switch_to.alert
     alert.accept()
@@ -105,7 +105,7 @@ def getBook(param):
         if url == param.bookUrl:
             break
         if chapterIndex >= param.start:
-            chapter = getChapter(book.name, driver, url, chapterIndex)
+            chapter = getChapter(book.name, url, chapterIndex)
             book.chapters.append(chapter)
         chapterIndex += 1
         elements = driver.find_elements(By.XPATH, '//*[@id="div_width"]/p[4]/a[3]')
