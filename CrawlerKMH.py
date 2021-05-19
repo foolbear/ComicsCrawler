@@ -4,21 +4,64 @@ import os
 import sys
 import time
 import string
+import getopt
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from urllib import quote
 
-from CrawlerDefine import formatContent, Book, Chapter, Picture, Slice
-from CrawlerWeb import Param, parseCommandLine, request, write2FCBP
+from CrawlerDefine import formatContent, Book, Chapter, Picture, Slice, postfixOfFCBP
+from CrawlerWeb import request
 
 reload(sys)
 sys.setdefaultencoding('utf8')
 
+class Param:
+    def __init__(self):
+        self.bookUrl = ''
+        self.outputPath = './'
+        self.start = 0
+        self.startVolume = 0
+        self.maxVolumes = 2000000
+        self.sourceName = ''
+        self.baseUrl = ''
+
+def parseCommandLine(defaultParam):
+    param = defaultParam
+    usage = 'Usage: %s -u <url> -o <outputpath> -s <start> -v <startvolume> -m <maxvolumes>' %(sys.argv[0])
+    
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], 'hu:o:s:v:m:', ['help', 'url=', 'opath=', 'start=', 'svolume=', 'max='])
+    except getopt.GetoptError:
+        print(usage)
+        sys.exit(2)
+    for key, value in opts:
+        if key in ('-h', '--help'):
+            print(usage)
+            sys.exit()
+        elif key in ('-u', '--url'):
+            param.bookUrl = value
+        elif key in ('-o', '--opath'):
+            param.outputPath = value
+        elif key in ('-s', '--start'):
+            param.start = int(value)
+        elif key in ('-v', '--svolume'):
+            param.startVolume = int(value)
+        elif key in ('-m', '--max'):
+            param.maxVolumes = int(value)
+    print('request book from %s(%s), outputPath=%s, start=%d, startVolume=%d, maxVolumes=%d' %(param.sourceName, param.bookUrl, param.outputPath, param.start, param.startVolume, param.maxVolumes))
+    return param
+    
+def write2FCBP(book, param):
+    path = param.outputPath + book.name + '_s' + str(param.start) + '_v' + str(param.startVolume) + '_m' + str(param.maxVolumes) + postfixOfFCBP
+    with open(path, 'w') as file:
+        json.dump(obj = book, fp = file, encoding = 'UTF-8', ensure_ascii = False, default = lambda x : x.__dict__, sort_keys = False, indent = 4)
+    print('write2FCBP success, output file: %s' %(path))
+
 def getPicture(url):
-    option = webdriver.ChromeOptions()
-    option.add_argument('headless')
-    driver = webdriver.Chrome(chrome_options = option)
+    options = webdriver.ChromeOptions()
+    options.add_argument('headless')
+    driver = webdriver.Chrome(chrome_options = options)
     driver.get(url)
     
     soup = BeautifulSoup(driver.page_source, 'html.parser')
@@ -27,11 +70,11 @@ def getPicture(url):
     pindex = manga_page.b.text.strip()
     ptotal = manga_page.text[len(pindex)+1:][:-1]
     driver.close()
-    print('\t%s/%s, %s' %(pindex, ptotal, img[:80]))
+    print('\t%s/%s, %s' %(pindex, ptotal, img))
     return int(pindex), int(ptotal), quote(img.encode('utf8'), safe = string.printable)
 
-def getChapter(url, title, index):
-    print('Chapter %s' %(title))
+def getVolume(url, title, index):
+    print('Volume %s' %(title))
     pindex, ptotal, img = getPicture(url)
     imgs = [img]
     for i in range(ptotal-1):
@@ -82,20 +125,22 @@ def getBook(param):
     book.sourceUpdateAt = update
     print(title)
     
-    chapterIndex = 0
-    chapters = soup.find_all('div', class_ = 'chapter-list')[0].find_all('ul')[0]
-    for chapter in chapters.find_all('li')[::-1]:
-        if chapterIndex >= param.start + param.maxChapters:
+    chapterIndex = param.start
+    volumeIndex = 0
+    volumes = soup.find_all('div', class_ = 'chapter-list')[0].find_all('ul')[0]
+    for volume in volumes.find_all('li')[::-1]:
+        if volumeIndex >= param.startVolume + param.maxVolumes:
             break
-        if chapterIndex < param.start:
-            chapterIndex += 1
+        if volumeIndex < param.startVolume:
+            volumeIndex += 1
             continue
-        chapter_url = param.baseUrl + chapter.a['href']
-        chapter_title = chapter.a.text.strip()
-        
-        chapters = getChapter(chapter_url, chapter_title, chapterIndex)
+            
+        url = param.baseUrl + volume.a['href']
+        title = volume.a.text.strip()
+        chapters = getVolume(url, title, chapterIndex)
         book.chapters += chapters
         chapterIndex += len(chapters)
+        volumeIndex += 1
     return book
     
 if __name__ == '__main__':
