@@ -1,7 +1,7 @@
 # ComicsCrawler
 
 ## 目的
-这个项目的目的是为了生成符合[ **“大笨熊漫画”**  App](https://apps.apple.com/us/app/) 需要格式化的 **“Foolbear Comics Book Package”** 而提供的 python 示例。您也可以使用其他语言和工具，只要生成“Foolbear Comics Book Package”格式即可。
+这个项目的目的是为了生成符合[ **“大笨熊漫画”**  App](https://apps.apple.com/us/app/FoolComics/id1567511821) 需要格式化的 **“Foolbear Comics Book Package”** 而提供的 python 示例。您也可以使用其他语言和工具，只要生成“Foolbear Comics Book Package”格式即可。
 
 ## Foolbear Comics Book Package
 这个格式是一个 Json 文件，其后缀是 **“.fcbp”** 。该文件可以通过类似 AirDrop 等方法导入到 **“大笨熊漫画”**  App 中，即可阅读漫画书。
