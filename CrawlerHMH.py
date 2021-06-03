@@ -77,7 +77,7 @@ def getBook(param):
     h1 = book_header.h1
     h1_text = h1.text.strip()
     span_text = h1.span.text.strip()
-    title = h1_text[:h1_text.find(span_text)]
+    title = h1_text[:h1_text.find(span_text)].replace('/', "-")
     writer = book_header.find_all('p', class_ = 'writer')
     author = writer[1].text.strip()[4:]
     update = writer[2].text.strip()[5:]
