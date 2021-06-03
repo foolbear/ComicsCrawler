@@ -13,7 +13,7 @@ from CrawlerWeb import Param, parseCommandLine, request, write2FCBP
 reload(sys)
 sys.setdefaultencoding('utf8')
 
-def getChapter(bookName, url, index):
+def getChapter(bookName, url, index, param):
     req = request(url = url)
     req.encoding = req.apparent_encoding
     soup = BeautifulSoup(req.text, 'html.parser')
@@ -31,7 +31,7 @@ def getChapter(bookName, url, index):
         divs = imgList.find_all('div', {'style': 'display: flex;align-items: center;'})
         if len(divs) != 0:
             for div in divs:
-                sys.stdout.write('[')
+                sys.stdout.write('(')
                 picture = Picture()
                 picture.index = pictureIndex
                 sliceIndex = 0
@@ -42,7 +42,7 @@ def getChapter(bookName, url, index):
                     slice.sourceUrl = param.baseUrl + img['src']
                     picture.slices.append(slice)
                     sliceIndex += 1
-                sys.stdout.write(']')
+                sys.stdout.write(')')
                 chapter.pictures.append(picture)
                 pictureIndex += 1
             sys.stdout.write('\n')
@@ -51,7 +51,7 @@ def getChapter(bookName, url, index):
             for img in imgs:
                 if len(img['src']) == 0:
                     continue
-                sys.stdout.write('[.]')
+                sys.stdout.write('*')
                 picture = Picture()
                 picture.index = pictureIndex
                 slice = Slice()
@@ -105,7 +105,7 @@ def getBook(param):
         if url == param.bookUrl:
             break
         if chapterIndex >= param.start:
-            chapter = getChapter(book.name, url, chapterIndex)
+            chapter = getChapter(book.name, url, chapterIndex, param)
             book.chapters.append(chapter)
         chapterIndex += 1
         elements = driver.find_elements(By.XPATH, '//*[@id="div_width"]/p[4]/a[3]')
