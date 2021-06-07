@@ -59,29 +59,20 @@ def write2FCBP(book, param):
         json.dump(obj = book, fp = file, encoding = 'UTF-8', ensure_ascii = False, default = lambda x : x.__dict__, sort_keys = False, indent = 4)
     print('write2FCBP success, output file: %s' %(path))
 
-def getPicture(url):
-    options = webdriver.ChromeOptions()
-    options.add_argument('headless')
-    driver = webdriver.Chrome(chrome_options = options)
-    driver.get(url)
-    
-    soup = BeautifulSoup(driver.page_source, 'html.parser')
-    img = soup.find_all('img')[1]['src']
-    manga_page = soup.find_all('span', class_ = 'manga-page')[0]
-    pindex = manga_page.b.text.strip()
-    ptotal = manga_page.text[len(pindex)+1:][:-1]
-    driver.close()
-    print('\t%s/%s, %s' %(pindex, ptotal, img))
-    return int(pindex), int(ptotal), quote(img.encode('utf8'), safe = string.printable)
-
 def getVolume(url, title, index):
-    print('Volume %s' %(title))
-    pindex, ptotal, img = getPicture(url)
-    imgs = [img]
-    for i in range(ptotal-1):
-        u = url + '#p=' + str(i+2)
-        pindex, ptotal, img = getPicture(u)
-        imgs.append(img)
+    req = request(url = url)
+    soup = BeautifulSoup(req.text, 'html.parser')
+    pics = soup.find('div', {'id': 'pic_list'}).find_all('div')
+    
+    imgs = []
+    for pic in pics:
+        if not (pic.has_attr('id') and pic.has_attr('_src')): continue
+        pic_url = pic['_src']
+        imgs.append(pic_url)
+#        pic_id = pic['id']
+#        print('\t%s: %s' %(pic_id, pic_url))
+    ptotal = len(imgs)
+    print('Volume %s, totoal %d pictures' %(title, ptotal))
         
     chapters = []
     count = ptotal // 10 + (0 if ptotal % 10 == 0 else 1)
@@ -109,12 +100,16 @@ def getVolume(url, title, index):
 def getBook(param):
     req = request(url = param.bookUrl)
     soup = BeautifulSoup(req.text, 'html.parser')
-    title = soup.find_all('div', class_ = 'main-bar bar-bg1')[0].h1.text
-    cont_list_dls = soup.find_all('div', class_ = 'cont-list')[0].find_all('dl')
-    author = cont_list_dls[2].text.strip()[3:]
-    update = cont_list_dls[1].text.strip()[4:]
-    cover = soup.find_all('div', class_ = 'thumb')[0].img['src']
-    introduction = formatContent(soup.find_all('div', class_ = 'book-intro book-intro-more')[0].text.strip())
+    title = soup.find_all('div', class_ = 'list_navbox')[0].h3.a.text
+    infos = soup.find_all('li', class_ = 'mss')
+    author = infos[0].span.a.text
+    latest = infos[4].span
+    latest_all = latest.text.strip().replace(' ', '')
+    latest_title = latest.a.text.strip()
+    update = latest_all[latest_all.find(latest_title)+len(latest_title):][1:-1]
+    dds = soup.find_all('div', class_ = 'box_info2')[0].find_all('dd')
+    cover = param.baseUrl + dds[0].a.img['src']
+    introduction = formatContent(dds[1].text.strip())
         
     book = Book()
     book.sourceName = param.sourceName
@@ -128,8 +123,8 @@ def getBook(param):
     
     chapterIndex = param.start
     volumeIndex = 0
-    volumes = soup.find_all('div', class_ = 'chapter-list')[0].find_all('ul')[0]
-    for volume in volumes.find_all('li')[::-1]:
+    volumes = soup.find('div', {'id': 'comic_chapter'}).find_all('ul')[0].find_all('li')[::-1]
+    for volume in volumes:
         if volumeIndex >= param.startVolume + param.maxVolumes:
             break
         if volumeIndex < param.startVolume:
@@ -146,12 +141,12 @@ def getBook(param):
     
 if __name__ == '__main__':
     param = Param()
-    param.bookUrl = 'https://m.mhgui.com/comic/1062/'
+    param.bookUrl = 'https://comic.acgn.cc/manhua-chengshilieren.htm'
     param.outputpath = './'
     param.start = 0
     param.maxChapters = 2000000
-    param.sourceName = '看漫画'
-    param.baseUrl = 'https://m.mhgui.com/'
+    param.sourceName = '動漫戲說'
+    param.baseUrl = 'https://comic.acgn.cc/'
     
     param = parseCommandLine(param)
     book = getBook(param)
