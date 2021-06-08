@@ -18,6 +18,7 @@ class Book:
         self.name = ''
         self.sourceName = ''
         self.sourceUrl = ''
+        self.refererUrl = ''
         self.sourceUpdateAt = ''
         self.chapters = []
         

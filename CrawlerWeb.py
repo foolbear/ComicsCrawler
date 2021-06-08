@@ -17,6 +17,7 @@ class Param:
         self.maxChapters = 2000000
         self.sourceName = ''
         self.baseUrl = ''
+        self.refererUrl = ''
 
 def parseCommandLine(defaultParam):
     param = defaultParam
