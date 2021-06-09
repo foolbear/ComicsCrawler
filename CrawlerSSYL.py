@@ -14,7 +14,7 @@ sys.setdefaultencoding('utf8')
 def getChapter(url, index):
     chapter = Chapter()
     chapter.index = index
-    chapter.name = '第' +  str(index+1) + '画'
+    chapter.name = '第' +  str(index+1) + '话'
     chapter.sourceUrl = url
     print('\tchapter %04d: %s' %(chapter.index, chapter.name))
     
