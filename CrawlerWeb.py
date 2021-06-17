@@ -44,7 +44,7 @@ def parseCommandLine(defaultParam):
     return param
     
 def write2FCBP(book, param):
-    path = param.outputPath + book.name + '_s' + str(param.start) + '_m' + str(param.maxChapters) + postfixOfFCBP
+    path = param.outputPath + '/' + book.name.replace('/', "-") + '_s' + str(param.start) + '_m' + str(param.maxChapters) + postfixOfFCBP
     with open(path, 'w') as file:
         json.dump(obj = book, fp = file, encoding = 'UTF-8', ensure_ascii = False, default = lambda x : x.__dict__, sort_keys = False, indent = 4)
     print('write2FCBP success, output file: %s' %(path))
